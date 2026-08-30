@@ -10,13 +10,13 @@ import {
 const DATA_MARKER = "TEXT_COMMENTS_DATA";
 
 /**
- * Persiste os comentários como UMA nota por documento, dentro da pasta
- * configurada, espelhando o caminho do documento de origem.
+ * Persists comments as ONE note per document, inside the configured
+ * folder, mirroring the source document's path.
  *
- *   Notes/Estudo.md  ->  Comentários/Notes/Estudo.md
+ *   Notes/Estudo.md  ->  Comments/Notes/Estudo.md
  *
- * A nota é legível (callouts) e ao mesmo tempo tem um bloco %% ... %% oculto
- * com o JSON, que é a fonte da verdade lida pelo plugin.
+ * The note is human-readable (callouts) and also carries a hidden %% ... %% block
+ * with the JSON, which is the source of truth read by the plugin.
  */
 export class CommentStore {
   constructor(private app: App, private settings: PluginSettings) {}
@@ -81,13 +81,13 @@ function parse(content: string): TextComment[] {
 function serialize(file: TFile, comments: TextComment[]): string {
   const lines: string[] = [];
   lines.push("---");
-  // Caminho em texto puro (sem [[link]]) para NÃO gerar aresta no grafo.
-  // A navegação até o documento é feita pelo painel do plugin.
+  // Plain-text path (no [[link]]) so no graph edge is created.
+  // Navigation to the document is done through the plugin's panel.
   lines.push(`source: "${file.path}"`);
   lines.push("tags: [note-comments]");
   lines.push("---");
   lines.push("");
-  lines.push(`# Comentários — ${file.basename}`);
+  lines.push(`# Comments — ${file.basename}`);
   lines.push("");
 
   for (const c of comments) {
@@ -96,11 +96,11 @@ function serialize(file: TFile, comments: TextComment[]): string {
     lines.push(`> [!${callout}] ${q}`);
     for (const bl of c.body.split("\n")) lines.push(`> ${bl}`);
 
-    // Trilha de auditoria, legível dentro do próprio callout.
+    // Audit trail, readable inside the callout itself.
     const hist = c.history && c.history.length ? c.history : [];
     if (hist.length) {
       lines.push(">");
-      lines.push("> **Histórico:**");
+      lines.push("> **History:**");
       for (const e of hist) {
         lines.push(`> - ${formatTimestamp(e.at)} — ${ACTION_LABEL[e.action]}`);
       }
@@ -108,7 +108,7 @@ function serialize(file: TFile, comments: TextComment[]): string {
     lines.push("");
   }
 
-  // Bloco oculto com a fonte da verdade.
+  // Hidden block with the source of truth.
   lines.push("%%");
   lines.push(DATA_MARKER);
   lines.push(JSON.stringify(comments, null, 2));
@@ -118,8 +118,8 @@ function serialize(file: TFile, comments: TextComment[]): string {
 }
 
 const ACTION_LABEL: Record<HistoryAction, string> = {
-  created: "criado",
-  edited: "editado",
-  done: "concluído",
-  reopened: "reaberto",
+  created: "created",
+  edited: "edited",
+  done: "completed",
+  reopened: "reopened",
 };

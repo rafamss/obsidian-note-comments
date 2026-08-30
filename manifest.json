@@ -3,7 +3,7 @@
   "name": "Note Comments",
   "version": "0.1.2",
   "minAppVersion": "1.7.2",
-  "description": "Adicione comentários a trechos de texto com destaque colorido e um painel lateral. Os comentários ficam em notas separadas, linkadas ao documento.",
+  "description": "Add comments to passages of text with colored highlighting and a side panel. Comments are stored in separate notes, linked to the document.",
   "author": "Rafael Santos",
   "isDesktopOnly": false
 }

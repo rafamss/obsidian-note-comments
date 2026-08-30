@@ -6,14 +6,14 @@ export interface Range {
 }
 
 /**
- * Reencontra a posição de um trecho comentado dentro do texto atual.
+ * Relocates a commented passage within the current text.
  *
- * Estratégia (estilo "text quote selector" do W3C / Hypothesis), sem inserir
- * nada no documento:
- *   1. casamento exato de `prefix + quote + suffix`;
- *   2. se houver várias ocorrências do trecho, escolhe a que tem o contexto
- *      (antes/depois) mais parecido;
- *   3. se o trecho não existe mais, retorna null (comentário "órfão").
+ * Strategy (in the style of the W3C / Hypothesis "text quote selector"), without inserting
+ * anything into the document:
+ *   1. exact match of `prefix + quote + suffix`;
+ *   2. if the passage occurs multiple times, pick the one whose context
+ *      (before/after) is most similar;
+ *   3. if the passage no longer exists, return null (an "orphan" comment).
  */
 export function findAnchor(
   text: string,
@@ -21,7 +21,7 @@ export function findAnchor(
 ): Range | null {
   if (!c.quote) return null;
 
-  // 1. Casamento exato com contexto.
+  // 1. Exact match with context.
   const withCtx = c.prefix + c.quote + c.suffix;
   const exactIdx = text.indexOf(withCtx);
   if (exactIdx !== -1) {
@@ -29,7 +29,7 @@ export function findAnchor(
     return { from, to: from + c.quote.length };
   }
 
-  // 2. Todas as ocorrências do trecho.
+  // 2. All occurrences of the passage.
   const positions: number[] = [];
   let i = text.indexOf(c.quote);
   while (i !== -1) {
@@ -42,7 +42,7 @@ export function findAnchor(
     return { from, to: from + c.quote.length };
   }
 
-  // Desempate por similaridade de contexto.
+  // Tie-break by context similarity.
   let best = positions[0];
   let bestScore = -1;
   for (const p of positions) {

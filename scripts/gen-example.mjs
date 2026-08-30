@@ -1,65 +1,65 @@
-// Gera um documento de exemplo + a nota-irmã de comentários (com o bloco JSON
-// que o plugin lê). Os offsets das âncoras são calculados a partir do texto real
-// para garantir que os realces casem.
+// Generates an example document + its sibling comment note (with the JSON block
+// the plugin reads). The anchor offsets are computed from the actual text
+// so the highlights match.
 import { mkdirSync, writeFileSync } from "fs";
 import { dirname } from "path";
 
-const CONTEXT = 32; // mesmo padrão do plugin (settings.contextLength)
-// Caminho do documento RELATIVO À RAIZ DO VAULT. A nota-irmã precisa ficar em
-// `<pasta de comentários>/<este caminho>` também a partir da raiz do vault.
-const DOC_VAULT_PATH = "examples/Exemplo Comentários.md";
-const COMMENTS_FOLDER = "Comentários";
+const CONTEXT = 32; // same default as the plugin (settings.contextLength)
+// Document path RELATIVE TO THE VAULT ROOT. The sibling note must also live at
+// `<comments folder>/<this path>` relative to the vault root.
+const DOC_VAULT_PATH = "examples/Example Comments.md";
+const COMMENTS_FOLDER = "Comments";
 const OUT_DOC = DOC_VAULT_PATH;
 const OUT_SIDE = `${COMMENTS_FOLDER}/${DOC_VAULT_PATH}`;
 
-const doc = `# Relatório de Análise de Logs
+const doc = `# Log Analysis Report
 
-Este documento de exemplo serve para testar o plugin de comentários. Ele contém cabeçalhos, parágrafos, imagens, listas, tabelas e blocos de código — incluindo comentários pendentes e concluídos.
+This example document is used to test the comments plugin. It contains headings, paragraphs, images, lists, tables, and code blocks — including pending and completed comments.
 
-## Contexto
+## Context
 
-A redução de ruído operacional é essencial para a eficiência do SOC. Eventos de logon do tipo 3 geram volume excessivo e devem ser filtrados na origem sempre que possível.
+Reducing operational noise is essential for SOC efficiency. Type 3 logon events generate excessive volume and should be filtered at the source whenever possible.
 
-![Diagrama de arquitetura](https://example.com/diagrama.png)
+![Architecture diagram](https://example.com/diagram.png)
 
-## Metodologia
+## Methodology
 
-Foram analisados os logs do período das 18h às 22h. A consulta abaixo foi utilizada para validar a redução observada:
+Logs from 6 PM to 10 PM were analyzed. The query below was used to validate the observed reduction:
 
 \`\`\`spl
 index="example_fortigate" sourcetype=fortigate_traffic
 | timechart span=15m count
 \`\`\`
 
-## Resultados
+## Results
 
-Os resultados mostraram uma redução de 62% no volume de eventos após a aplicação do filtro. A tabela a seguir resume os números coletados:
+The results showed a 62% reduction in event volume after applying the filter. The table below summarizes the collected numbers:
 
-| Período | Antes | Depois |
+| Period | Before | After |
 | --- | --- | --- |
-| 18h-19h | 12000 | 4600 |
-| 19h-20h | 11500 | 4300 |
+| 6 PM-7 PM | 12000 | 4600 |
+| 7 PM-8 PM | 11500 | 4300 |
 
-> Observação: os valores são aproximados e podem variar conforme o ambiente analisado.
+> Note: values are approximate and may vary depending on the analyzed environment.
 
-## Conclusão
+## Conclusion
 
-A estratégia de filtragem na origem mostrou-se eficaz e deve ser estendida aos demais índices monitorados.
+The source filtering strategy proved effective and should be extended to the other monitored indexes.
 `;
 
 const t = (y, mo, d, h, mi) => new Date(y, mo - 1, d, h, mi).getTime();
 
-// Comentários de exemplo (mix de pendentes e concluídos).
+// Example comments (mix of pending and completed).
 const specs = [
   {
-    quote: "redução de ruído operacional",
-    body: "Precisamos definir a métrica de ruído antes de validar a redução.",
+    quote: "Reducing operational noise",
+    body: "We need to define the noise metric before validating the reduction.",
     done: false,
     history: [{ at: t(2026, 6, 10, 9, 15), action: "created" }],
   },
   {
-    quote: "logon do tipo 3",
-    body: "Confirmado com a equipe de infra: tipo 3 pode ser filtrado na origem.",
+    quote: "Type 3 logon events",
+    body: "Confirmed with the infra team: type 3 can be filtered at the source.",
     done: true,
     history: [
       { at: t(2026, 6, 10, 9, 20), action: "created" },
@@ -67,8 +67,8 @@ const specs = [
     ],
   },
   {
-    quote: "## Metodologia",
-    body: "Metodologia revisada e aprovada pela coordenação.",
+    quote: "## Methodology",
+    body: "Methodology reviewed and approved by the coordination.",
     done: true,
     history: [
       { at: t(2026, 6, 10, 10, 0), action: "created" },
@@ -77,14 +77,14 @@ const specs = [
     ],
   },
   {
-    quote: "redução de 62%",
-    body: "Recalcular: a base de comparação parece incluir o horário de pico.",
+    quote: "62% reduction",
+    body: "Recalculate: the comparison baseline seems to include the peak hour.",
     done: false,
     history: [{ at: t(2026, 6, 11, 11, 0), action: "created" }],
   },
   {
-    quote: "os valores são aproximados e podem variar",
-    body: "Adicionar a margem de erro estimada para o número final.",
+    quote: "values are approximate and may vary",
+    body: "Add the estimated margin of error for the final number.",
     done: false,
     history: [{ at: t(2026, 6, 12, 10, 0), action: "created" }],
   },
@@ -92,7 +92,7 @@ const specs = [
 
 const comments = specs.map((s, i) => {
   const idx = doc.indexOf(s.quote);
-  if (idx === -1) throw new Error(`Trecho não encontrado: ${s.quote}`);
+  if (idx === -1) throw new Error(`Passage not found: ${s.quote}`);
   const prefix = doc.slice(Math.max(0, idx - CONTEXT), idx);
   const suffix = doc.slice(idx + s.quote.length, idx + s.quote.length + CONTEXT);
   const created = s.history[0].at;
@@ -110,12 +110,12 @@ const comments = specs.map((s, i) => {
   };
 });
 
-// ---- nota-irmã (mesmo formato do store.ts) ----
+// ---- sibling note (same format as store.ts) ----
 const ACTION_LABEL = {
-  created: "criado",
-  edited: "editado",
-  done: "concluído",
-  reopened: "reaberto",
+  created: "created",
+  edited: "edited",
+  done: "completed",
+  reopened: "reopened",
 };
 const fmt = (ts) => {
   const d = new Date(ts);
@@ -129,14 +129,14 @@ L.push(`source: "${DOC_VAULT_PATH}"`);
 L.push("tags: [note-comments]");
 L.push("---");
 L.push("");
-L.push(`# Comentários — Exemplo Comentários`);
+L.push(`# Comments — Example Comments`);
 L.push("");
 for (const c of comments) {
   const q = c.quote.replace(/\s+/g, " ").trim().slice(0, 120);
   L.push(`> [!${c.done ? "success" : "quote"}] ${q}`);
   for (const bl of c.body.split("\n")) L.push(`> ${bl}`);
   L.push(">");
-  L.push("> **Histórico:**");
+  L.push("> **History:**");
   for (const e of c.history) L.push(`> - ${fmt(e.at)} — ${ACTION_LABEL[e.action]}`);
   L.push("");
 }
@@ -153,4 +153,4 @@ writeFileSync(OUT_SIDE, L.join("\n"));
 
 console.log(`OK: ${OUT_DOC}`);
 console.log(`OK: ${OUT_SIDE}`);
-console.log(`Comentários: ${comments.filter((c) => !c.done).length} pendentes, ${comments.filter((c) => c.done).length} concluídos`);
+console.log(`Comments: ${comments.filter((c) => !c.done).length} pending, ${comments.filter((c) => c.done).length} completed`);

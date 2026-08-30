@@ -4,37 +4,37 @@ export type SortKey =
   | "created-asc"
   | "created-desc";
 
-/** Ações registradas na trilha de auditoria de um comentário. */
+/** Actions recorded in a comment's audit trail. */
 export type HistoryAction = "created" | "edited" | "done" | "reopened";
 
 export interface HistoryEvent {
-  /** Timestamp (epoch ms) do evento. */
+  /** Event timestamp (epoch ms). */
   at: number;
   action: HistoryAction;
 }
 
 export interface TextComment {
-  /** Identificador estável do comentário. */
+  /** Stable comment identifier. */
   id: string;
-  /** Trecho exato que foi comentado (a "âncora"). */
+  /** The exact passage that was commented (the "anchor"). */
   quote: string;
-  /** Texto imediatamente antes do trecho, usado para desambiguar. */
+  /** Text immediately before the passage, used for disambiguation. */
   prefix: string;
-  /** Texto imediatamente depois do trecho, usado para desambiguar. */
+  /** Text immediately after the passage, used for disambiguation. */
   suffix: string;
-  /** Corpo do comentário escrito pelo usuário. */
+  /** The comment body written by the user. */
   body: string;
-  /** Comentário concluído (resolvido)? Muda a cor do realce. */
+  /** Comment completed (resolved)? Changes the highlight color. */
   done?: boolean;
-  /** Cor opcional específica deste comentário (CSS). Tem prioridade. */
+  /** Optional per-comment color (CSS). Takes precedence. */
   color?: string;
-  /** Trilha de auditoria: cada mudança de estado vira um evento. */
+  /** Audit trail: every state change becomes an event. */
   history: HistoryEvent[];
   created: number;
   modified: number;
 }
 
-/** Garante que todo comentário tenha histórico (retrocompatibilidade). */
+/** Ensures every comment has a history (backward compatibility). */
 export function ensureHistory(c: TextComment): TextComment {
   if (!c.history || c.history.length === 0) {
     c.history = [{ at: c.created || c.modified || Date.now(), action: "created" }];
@@ -42,7 +42,7 @@ export function ensureHistory(c: TextComment): TextComment {
   return c;
 }
 
-/** Formata um timestamp como `AAAA-MM-DD HH:mm` (hora local). */
+/** Formats a timestamp as `YYYY-MM-DD HH:mm` (local time). */
 export function formatTimestamp(ts: number): string {
   const d = new Date(ts);
   const p = (n: number) => String(n).padStart(2, "0");
@@ -53,20 +53,20 @@ export function formatTimestamp(ts: number): string {
 }
 
 export interface PluginSettings {
-  /** Pasta onde as notas de comentários são gravadas. */
+  /** Folder where comment notes are stored. */
   commentsFolder: string;
-  /** Quantos caracteres de contexto guardar antes/depois do trecho. */
+  /** How many context characters to keep before/after the passage. */
   contextLength: number;
-  /** Ordenação padrão do painel. */
+  /** Default panel sorting. */
   defaultSort: SortKey;
-  /** Cor do realce para comentários pendentes. Vazio = padrão do tema. */
+  /** Highlight color for pending comments. Empty = theme default. */
   pendingColor: string;
-  /** Cor do realce para comentários concluídos. */
+  /** Highlight color for completed comments. */
   doneColor: string;
 }
 
 export const DEFAULT_SETTINGS: PluginSettings = {
-  commentsFolder: "Comentários",
+  commentsFolder: "Comments",
   contextLength: 32,
   defaultSort: "position-asc",
   pendingColor: "",
@@ -74,8 +74,8 @@ export const DEFAULT_SETTINGS: PluginSettings = {
 };
 
 /**
- * Resolve a cor e o estado do realce de um comentário.
- * `color` nulo significa "usar o padrão do tema".
+ * Resolves the color and state of a comment's highlight.
+ * A null `color` means "use the theme default".
  */
 export function resolveHighlight(
   c: TextComment,

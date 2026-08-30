@@ -9,7 +9,7 @@ import { setIcon } from "obsidian";
 import { PluginSettings, TextComment, resolveHighlight } from "./types";
 import { findAnchor } from "./anchoring";
 
-/** Ícone clicável inserido ao fim de cada trecho comentado, no editor. */
+/** Clickable icon inserted at the end of each commented passage, in the editor. */
 class CommentWidget extends WidgetType {
   constructor(
     readonly id: string,
@@ -42,13 +42,13 @@ class CommentWidget extends WidgetType {
   }
 }
 
-/** Efeito para substituir o conjunto de destaques no editor ativo. */
+/** Effect used to replace the set of highlights in the active editor. */
 export const setCommentDecos = StateEffect.define<DecorationSet>();
 
 /**
- * Campo que guarda os destaques. Importante: `deco.map(tr.changes)` faz os
- * destaques se moverem junto com as edições durante a sessão — re-ancoragem
- * "de graça" enquanto se digita.
+ * Field holding the highlights. Important: `deco.map(tr.changes)` keeps the
+ * highlights moving along with edits during the session — re-anchoring
+ * "for free" while you type.
  */
 export const commentDecoField = StateField.define<DecorationSet>({
   create: () => Decoration.none,
@@ -62,7 +62,7 @@ export const commentDecoField = StateField.define<DecorationSet>({
   provide: (f) => EditorView.decorations.from(f),
 });
 
-/** Constrói os destaques (fundo + sublinhado) para os comentários do texto. */
+/** Builds the highlights (background + underline) for the comments in the text. */
 export function buildDecorations(
   text: string,
   comments: TextComment[],
@@ -75,7 +75,7 @@ export function buildDecorations(
     const { color, done } = resolveHighlight(c, settings);
     const attributes: Record<string, string> = { "data-comment-id": c.id };
     if (color) attributes.style = `--tc-color: ${color}`;
-    // Tooltip do Obsidian (segue o tema/tipografia), não o `title` nativo.
+    // Obsidian tooltip (follows theme/typography), not the native `title` attribute.
     if (c.body) attributes["aria-label"] = c.body;
     ranges.push(
       Decoration.mark({
@@ -85,10 +85,10 @@ export function buildDecorations(
         attributes,
       }).range(r.from, r.to)
     );
-    // Ícone clicável logo após o trecho.
+    // Clickable icon right after the passage.
     ranges.push(
       Decoration.widget({
-        widget: new CommentWidget(c.id, c.body || "Comentário", done),
+        widget: new CommentWidget(c.id, c.body || "Comment", done),
         side: 1,
       }).range(r.to)
     );

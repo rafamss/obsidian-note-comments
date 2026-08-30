@@ -21,7 +21,7 @@ export class CommentsView extends ItemView {
   }
 
   getDisplayText(): string {
-    return "Comentários";
+    return "Comments";
   }
 
   getIcon(): string {
@@ -32,7 +32,7 @@ export class CommentsView extends ItemView {
     this.render();
   }
 
-  /** Recalcula e redesenha a lista. Chamado pelo plugin quando algo muda. */
+  /** Recomputes and redraws the list. Called by the plugin when something changes. */
   render(): void {
     const { contentEl } = this;
     contentEl.empty();
@@ -41,19 +41,19 @@ export class CommentsView extends ItemView {
     const file = this.plugin.activeFile;
     const comments = this.plugin.activeComments;
 
-    // Cabeçalho com controles de ordenação.
+    // Header with sorting controls.
     const header = contentEl.createDiv({ cls: "note-comments-header" });
     header.createEl("div", {
       cls: "note-comments-title",
-      text: file ? file.basename : "Nenhum documento",
+      text: file ? file.basename : "No document",
     });
 
     const select = header.createEl("select", { cls: "dropdown" });
     const options: Array<[SortKey, string]> = [
-      ["position-asc", "Posição ↑"],
-      ["position-desc", "Posição ↓"],
-      ["created-asc", "Mais antigos"],
-      ["created-desc", "Mais recentes"],
+      ["position-asc", "Position ↑"],
+      ["position-desc", "Position ↓"],
+      ["created-asc", "Oldest first"],
+      ["created-desc", "Newest first"],
     ];
     for (const [value, label] of options) {
       const opt = select.createEl("option", { text: label });
@@ -65,12 +65,12 @@ export class CommentsView extends ItemView {
       this.render();
     };
 
-    // Botão de ocultar/mostrar concluídos.
+    // Button to hide/show completed comments.
     const toggleDone = header.createEl("button", { cls: "clickable-icon" });
     setIcon(toggleDone, this.hideDone ? "eye-off" : "eye");
     toggleDone.setAttribute(
       "aria-label",
-      this.hideDone ? "Mostrar concluídos" : "Ocultar concluídos"
+      this.hideDone ? "Show completed" : "Hide completed"
     );
     toggleDone.onclick = () => {
       this.hideDone = !this.hideDone;
@@ -82,20 +82,20 @@ export class CommentsView extends ItemView {
     if (comments.length === 0) {
       contentEl.createDiv({
         cls: "note-comments-empty",
-        text: "Selecione um trecho e use o menu de contexto para comentar.",
+        text: "Select a passage and use the context menu to comment.",
       });
       return;
     }
 
-    // Contadores.
+    // Counters.
     const doneCount = comments.filter((c) => c.done).length;
     const pendingCount = comments.length - doneCount;
     contentEl.createDiv({
       cls: "note-comments-counts",
-      text: `${pendingCount} pendente${pendingCount === 1 ? "" : "s"} · ${doneCount} concluído${doneCount === 1 ? "" : "s"}`,
+      text: `${pendingCount} pending · ${doneCount} completed`,
     });
 
-    // Calcula a posição atual de cada comentário (para ordenar e detectar órfãos).
+    // Computes each comment's current position (for sorting and detecting orphans).
     const text = this.plugin.activeText;
     const enriched = comments
       .filter((c) => !(this.hideDone && c.done))
@@ -123,7 +123,7 @@ export class CommentsView extends ItemView {
     }
   }
 
-  /** Rola até o cartão de um comentário e o destaca brevemente. */
+  /** Scrolls to a comment's card and briefly highlights it. */
   focusComment(id: string): void {
     const card = this.contentEl.querySelector<HTMLElement>(
       `.text-comment-card[data-comment-id="${id}"]`
@@ -146,7 +146,7 @@ export class CommentsView extends ItemView {
 
     const quote = card.createDiv({ cls: "text-comment-quote" });
     quote.setText(comment.quote);
-    if (orphan) quote.setAttribute("aria-label", "Trecho não encontrado no documento");
+    if (orphan) quote.setAttribute("aria-label", "Passage not found in the document");
 
     card.createDiv({ cls: "text-comment-body", text: comment.body });
 
@@ -159,7 +159,7 @@ export class CommentsView extends ItemView {
     setIcon(doneBtn, comment.done ? "check-circle-2" : "circle");
     doneBtn.setAttribute(
       "aria-label",
-      comment.done ? "Marcar como pendente" : "Marcar como concluído"
+      comment.done ? "Mark as pending" : "Mark as completed"
     );
     doneBtn.onclick = (e) => {
       e.stopPropagation();
@@ -168,7 +168,7 @@ export class CommentsView extends ItemView {
 
     const editBtn = actions.createEl("button", { cls: "clickable-icon" });
     setIcon(editBtn, "pencil");
-    editBtn.setAttribute("aria-label", "Editar");
+    editBtn.setAttribute("aria-label", "Edit");
     editBtn.onclick = (e) => {
       e.stopPropagation();
       void this.plugin.editComment(comment);
@@ -176,25 +176,25 @@ export class CommentsView extends ItemView {
 
     const delBtn = actions.createEl("button", { cls: "clickable-icon" });
     setIcon(delBtn, "trash-2");
-    delBtn.setAttribute("aria-label", "Excluir");
+    delBtn.setAttribute("aria-label", "Delete");
     delBtn.onclick = (e) => {
       e.stopPropagation();
       void this.plugin.deleteComment(comment);
     };
 
-    // Clicar no card leva ao trecho no editor.
+    // Clicking a card jumps to the passage in the editor.
     card.onclick = () => this.plugin.scrollToComment(comment);
   }
 
-  /** Linha de metadados (datas) a partir do histórico de auditoria. */
+  /** Metadata line (dates) from the audit history. */
   private cardMeta(comment: TextComment): string {
     const hist = comment.history ?? [];
     const parts: string[] = [];
     const created = hist.find((e) => e.action === "created");
-    if (created) parts.push(`criado ${formatTimestamp(created.at)}`);
+    if (created) parts.push(`created ${formatTimestamp(created.at)}`);
     if (comment.done) {
       const done = [...hist].reverse().find((e) => e.action === "done");
-      if (done) parts.push(`concluído ${formatTimestamp(done.at)}`);
+      if (done) parts.push(`completed ${formatTimestamp(done.at)}`);
     }
     return parts.join(" · ");
   }

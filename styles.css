@@ -1,4 +1,4 @@
-/* Destaque do trecho comentado — fundo + sublinhado, ligados ao tema. */
+/* Highlight of the commented passage — background + underline, tied to the theme. */
 .text-comment-highlight {
   background-color: var(--text-highlight-bg);
   border-bottom: 2px solid var(--text-accent);
@@ -7,19 +7,19 @@
   cursor: pointer;
 }
 
-/* Cor personalizada (pendente ou concluído): aplicada de forma translúcida
-   para permanecer legível em qualquer tema. */
+/* Custom color (pending or completed): applied translucently
+   to stay readable on any theme. */
 .text-comment-highlight[style*="--tc-color"] {
   background-color: color-mix(in srgb, var(--tc-color) 35%, transparent);
   border-bottom-color: color-mix(in srgb, var(--tc-color) 70%, transparent);
 }
 
-/* Concluído: sublinhado pontilhado e mais discreto, para facilitar a leitura. */
+/* Completed: dotted, more subtle underline to make reading easier. */
 .text-comment-highlight.is-done {
   border-bottom-style: dotted;
 }
 
-/* Ícone clicável (widget) ao fim do trecho comentado, no editor. */
+/* Clickable icon (widget) at the end of the commented passage, in the editor. */
 .text-comment-widget {
   display: inline-flex;
   align-items: center;
@@ -44,7 +44,7 @@
   height: 0.85em;
 }
 
-/* Flash ao navegar até o trecho pelo painel (modo leitura). */
+/* Flash when navigating to the passage from the panel (reading mode). */
 .text-comment-flash {
   animation: text-comment-flash 1.2s ease-out;
 }
@@ -60,7 +60,7 @@
   }
 }
 
-/* ---- Painel lateral ---- */
+/* ---- Side panel ---- */
 .note-comments-panel {
   padding: 8px;
 }
@@ -131,7 +131,7 @@
   text-decoration-color: var(--text-faint);
 }
 
-/* Flash ao revelar um cartão (clicando no realce do documento). */
+/* Flash when revealing a card (clicking the highlight in the document). */
 .text-comment-card.is-flash {
   animation: text-comment-card-flash 1.2s ease-out;
 }

@@ -1,7 +1,7 @@
 {
   "name": "obsidian-note-comments",
   "version": "0.1.2",
-  "description": "Comentários ancorados a trechos de texto, com destaque e painel lateral.",
+  "description": "Anchored comments on passages of text, with highlighting and a side panel.",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",

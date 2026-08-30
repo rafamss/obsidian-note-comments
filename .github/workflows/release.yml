@@ -6,9 +6,9 @@ on:
       - "*"
 
 permissions:
-  contents: write       # criar o release e anexar assets
-  id-token: write       # exigido pela geração de attestation
-  attestations: write   # registrar a attestation de proveniência
+  contents: write       # create the release and attach assets
+  id-token: write       # required by attestation generation
+  attestations: write   # record the provenance attestation
 
 jobs:
   release:
@@ -21,13 +21,13 @@ jobs:
           node-version: "20"
           cache: "npm"
 
-      - name: Instalar dependências
+      - name: Install dependencies
         run: npm ci
 
-      - name: Build de produção
+      - name: Production build
         run: npm run build
 
-      - name: Gerar attestation de proveniência dos assets
+      - name: Generate provenance attestation for assets
         uses: actions/attest-build-provenance@v2
         with:
           subject-path: |
@@ -35,11 +35,11 @@ jobs:
             manifest.json
             styles.css
 
-      - name: Criar release com os assets
+      - name: Create release with assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create "$GITHUB_REF_NAME" \
             --title "$GITHUB_REF_NAME" \
-            --notes "Release automático de \`$GITHUB_REF_NAME\` com attestation de proveniência." \
+            --notes "Automatic release of \`$GITHUB_REF_NAME\` with provenance attestation." \
             main.js manifest.json styles.css

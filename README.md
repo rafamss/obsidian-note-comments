@@ -1,79 +1,81 @@
-# Note Comments — plugin para Obsidian
+# Note Comments — Obsidian plugin
 
-Adiciona comentários ancorados a qualquer trecho de texto (uma palavra, frase ou
-parágrafo), com **destaque colorido + sublinhado** ligados ao tema, e um
-**painel lateral** com ordenação.
+Adds anchored comments to any passage of text (a word, phrase, or paragraph),
+with **colored highlight + underline** tied to the theme, and a **side panel**
+with sorting.
 
-![Documento com trechos comentados e o painel lateral de comentários](docs/images/overview.png)
+![Document with commented passages and the side comments panel](docs/images/overview.png)
 
-## Funcionalidades
+## Features
 
-- **Comentar via botão direito**: selecione um trecho → menu de contexto →
-  *Adicionar comentário*. Também disponível como comando.
-- **Destaque** do trecho com fundo (`--text-highlight-bg`) e sublinhado
-  (`--text-accent`) — respeita tema claro/escuro. Funciona em Live Preview,
-  Source e modo Leitura.
-- **Painel à direita** listando todos os comentários do documento, com
-  ordenação crescente/decrescente por **posição** ou por **data**.
-- **Documento limpo**: nada é inserido no seu markdown. A âncora é o próprio
-  trecho + contexto, reencontrado automaticamente (estilo *text quote
-  selector*). Se um trecho for muito reescrito, o comentário vira "órfão"
-  (mostrado esmaecido no painel) em vez de se perder silenciosamente.
-- **Armazenamento**: uma nota por documento, dentro da pasta configurável,
-  espelhando o caminho de origem e com backlink `[[documento]]`. A nota é
-  legível (callouts) e tem um bloco `%% ... %%` oculto com o JSON, que é a fonte
-  da verdade.
+- **Comment via right-click**: select a passage → context menu →
+  *Add comment*. Also available as a command.
+- **Highlight** of the passage with background (`--text-highlight-bg`) and
+  underline (`--text-accent`) — respects light/dark theme. Works in Live
+  Preview, Source, and reading mode.
+- **Panel on the right** listing all comments of the document, with
+  ascending/descending sort by **position** or **date**.
+- **Clean document**: nothing is inserted into your markdown. The anchor is the
+  passage itself + context, relocated automatically (in the style of *text
+  quote selector*). If a passage is heavily rewritten, the comment becomes an
+  "orphan" (shown dimmed in the panel) instead of silently getting lost.
+- **Storage**: one note per document, inside the configurable folder, mirroring
+  the source path and with a `[[document]]` backlink. The note is
+  human-readable (callouts) and has a hidden `%% ... %%` block with the JSON,
+  which is the source of truth.
 
-## Capturas de tela
+## Screenshots
 
-**Painel com histórico** — cada comentário guarda a trilha `criado → editado →
-concluído`; os concluídos aparecem riscados.
+**Panel with history** — each comment keeps the `created → edited → completed`
+trail; completed ones appear struck through.
 
-![Painel de comentários com a trilha de histórico](docs/images/panel.png)
+![Comments panel with the history trail](docs/images/panel.png)
 
-**Filtrar concluídos** — o ícone de olho esconde os comentários já resolvidos,
-deixando só os pendentes.
+**Filter completed** — the eye icon hides resolved comments, leaving only
+pending ones.
 
-![Painel filtrando apenas os comentários pendentes](docs/images/filter.png)
+![Panel filtering only pending comments](docs/images/filter.png)
 
-**Ordenação** — por posição no documento ou por data (mais antigos / mais
-recentes).
+**Sorting** — by position in the document or by date (oldest first / newest
+first).
 
-![Menu de ordenação do painel](docs/images/sort.png)
+![Panel sorting menu](docs/images/sort.png)
 
-**Configurável** — pasta das notas, tamanho do contexto da âncora, ordenação
-padrão e as cores de realce (pendente / concluído).
+**Configurable** — notes folder, anchor context length, default sorting, and
+the highlight colors (pending / completed).
 
-![Tela de configurações do plugin](docs/images/settings.png)
+![Plugin settings screen](docs/images/settings.png)
 
-## Como a âncora funciona
+## How the anchor works
 
-Ao comentar, guardamos `quote` (o trecho), `prefix` e `suffix` (alguns
-caracteres ao redor). Para destacar, reencontramos a posição no texto atual:
+When commenting, we store `quote` (the passage), `prefix`, and `suffix` (a few
+characters around it). To highlight, we relocate its position in the current
+text:
 
-1. casamento exato de `prefix + quote + suffix`;
-2. se houver várias ocorrências do trecho, escolhemos a de contexto mais
-   parecido;
-3. se não existe mais, o comentário fica órfão.
+1. exact match of `prefix + quote + suffix`;
+2. if the passage occurs multiple times, we pick the one with the most similar
+   context;
+3. if it no longer exists, the comment becomes an orphan.
 
-Durante a edição, os destaques se movem junto com o texto (mapeamento de
-decorations do CodeMirror), então só recorremos ao reencontro ao reabrir.
+While editing, the highlights move along with the text (CodeMirror decoration
+mapping), so relocation is only used when reopening.
 
-## Desenvolvimento
+## Development
 
 ```bash
 npm install
-npm run dev     # build com watch
-npm run build   # build de produção + type-check
+npm run dev     # build with watch
+npm run build   # production build + type-check
 ```
 
-Para testar: copie `main.js`, `manifest.json` e `styles.css` para
-`<vault>/.obsidian/plugins/note-comments/` e ative o plugin.
+To test: copy `main.js`, `manifest.json`, and `styles.css` to
+`<vault>/.obsidian/plugins/note-comments/` and enable the plugin.
 
-## Limitações conhecidas (v0.1)
+## Known limitations (v0.1)
 
-- No modo leitura, destacamos a **primeira ocorrência** do trecho dentro de cada
-  bloco e apenas quando ele cabe num único nó de texto (sem formatação no meio).
-- O reencontro é por texto exato; reescritas grandes do trecho criam órfãos.
-- Uma cor por destaque é suportada no modelo de dados (`color`), mas ainda não há
-  UI para escolhê-la.
+- In reading mode, we highlight the **first occurrence** of the passage within
+  each block and only when it fits in a single text node (no formatting in the
+  middle).
+- Relocation is by exact text; large rewrites of the passage create orphans.
+- One color per highlight is supported in the data model (`color`), but there is
+  no UI to pick it yet.
